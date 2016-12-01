@@ -56,3 +56,37 @@ $lastCoord = array_reduce($vectors, function ($carry, $item) {
 }, ['x' => 0, 'y' => 0]);
 
 var_dump('part1:', abs($lastCoord['x']) + abs($lastCoord['y']));
+
+
+$allPoints = [['x' => 0, 'y' => 0]];
+foreach ($vectors as $vector) {
+  for ($i = 0; $i < abs($vector['x']); $i++) {
+    $lastVector = $allPoints[count($allPoints) -1];
+    if ($vector['x'] > 0) {
+      $allPoints[] = ['x' => $lastVector['x'] + 1, 'y' => $lastVector['y']];
+    } else {
+      $allPoints[] = ['x' => $lastVector['x'] - 1, 'y' => $lastVector['y']];
+    }
+  }
+
+  for ($i = 0; $i < abs($vector['y']); $i++) {
+    $lastVector = $allPoints[count($allPoints) -1];
+    if ($vector['y'] > 0) {
+      $allPoints[] = ['x' => $lastVector['x'], 'y' => $lastVector['y'] + 1];
+    } else {
+      $allPoints[] = ['x' => $lastVector['x'], 'y' => $lastVector['y'] - 1];
+    }
+  }
+}
+
+$set = [];
+foreach ($allPoints as $point) {
+  $hash = sprintf("%s,%s", $point['x'], $point['y']);
+  if (isset($set[$hash])) {
+    break;
+  } else {
+    $set[$hash] = $point;
+  }
+}
+
+var_dump('part2:', abs($point['x']) + abs($point['y']));
