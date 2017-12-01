@@ -8,7 +8,7 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn from_str(input: &str) -> Input {
+    pub fn from_string(input: &str) -> Input {
         Input { data: input.to_string() }
     }
 
@@ -19,12 +19,15 @@ impl Input {
 
         Ok(Input { data: content })
     }
+
+    fn to_vec(&self) -> Vec<i32> {
+        self.data.chars().filter_map(|c| c.to_string().parse::<i32>().ok()).collect()
+    }
 }
 
 
-pub fn calculate(input: &Input) -> i32 {
-    let numbers: Vec<_> =
-        input.data.chars().filter_map(|c| c.to_string().parse::<i32>().ok()).collect();
+pub fn calculate_part1(input: &Input) -> i32 {
+    let numbers = input.to_vec();
 
     let mut total = 0;
     let mut last = *numbers.last().unwrap();
@@ -34,6 +37,28 @@ pub fn calculate(input: &Input) -> i32 {
             total += number;
         }
         last = number;
+    }
+
+    total
+}
+
+
+pub fn calculate_part2(input: &Input) -> i32 {
+    let numbers = input.to_vec();
+    let length = numbers.len();
+    let position = length / 2;
+
+    let mut total = 0;
+
+    for (i, &number) in numbers.iter().enumerate() {
+        let other = if i + position >= length {
+            numbers[i - position]
+        } else {
+            numbers[i + position]
+        };
+        if number == other {
+            total += number;
+        }
     }
 
     total
