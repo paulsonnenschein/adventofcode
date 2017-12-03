@@ -8,5 +8,6 @@ fn main() {
     let Point { x, y } = Point::from_number(input);
 
     println!("Part1 solution: {}", x.abs() + y.abs());
-    //println!("Part2 solution: {}", calculate_part2(&input));
+    let Point { x, y } = Point::from_number2(input);
+    println!("Part2 solution: {}", x.abs() + y.abs());
 }
