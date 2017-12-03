@@ -9,5 +9,5 @@ fn main() {
     let _ = file.read_to_string(&mut input);
 
     println!("Part1 solution: {}", calculate_part1(&input));
-    //println!("Part2 solution: {}", calculate_part2(&input));s
+    println!("Part2 solution: {}", calculate_part2(&input));
 }
