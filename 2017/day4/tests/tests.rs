@@ -19,5 +19,5 @@ fn test_sample_input3() {
 
 #[test]
 fn test_sample_input4() {
-    assert_eq!(2, count_valid_rows("aa bb cc dd ee\naa bb cc dd aa\naa bb cc dd aaa"))
+    assert_eq!(2, count_valid_rows("aa bb cc dd ee\naa bb cc dd aa\naa bb cc dd aaa", is_row_valid))
 }

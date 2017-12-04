@@ -8,6 +8,9 @@ fn main() {
     let mut file = File::open("input.txt").unwrap();
     let _ = file.read_to_string(&mut input);
 
-    println!("Part1 solution: {}", count_valid_rows(&input));
-    //println!("Part2 solution: {}", calculate_part2(&input));
+    println!("Part1 solution: {}", count_valid_rows(&input, is_row_valid));
+    println!(
+        "Part2 solution: {}",
+        count_valid_rows(&input, is_row_valid_part2)
+    );
 }
