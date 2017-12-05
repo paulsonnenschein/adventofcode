@@ -11,5 +11,5 @@ fn main() {
     let instructions = str_to_vec(&input);
 
     println!("Part1 solution: {}", count_steps(&instructions));
-    //println!("Part2 solution: {}", 5);
+    println!("Part2 solution: {}", count_steps_part2(&instructions));
 }
