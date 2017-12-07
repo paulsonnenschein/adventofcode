@@ -35,6 +35,8 @@ fn test_sample_input5() {
 #[test]
 fn test_sample_input6() {
     let input = vec![0, 2, 7, 0];
+    let iterations = count_iterations(&input);
 
-    assert_eq!(5, count_iterations(&input));
+    assert_eq!(5, iterations.0);
+    assert_eq!(4, iterations.1);
 }

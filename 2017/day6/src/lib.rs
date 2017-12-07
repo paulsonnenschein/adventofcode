@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 pub fn str_to_vec(str: &str) -> Vec<i32> {
     str.split_whitespace()
@@ -6,19 +6,21 @@ pub fn str_to_vec(str: &str) -> Vec<i32> {
         .collect()
 }
 
-pub fn count_iterations(input: &[i32]) -> i32 {
+pub fn count_iterations(input: &[i32]) -> (i32, i32) {
     let mut banks = Vec::from(input);
-    let mut set = HashSet::new();
-    set.insert(banks.clone());
+    let mut map = HashMap::new();
+    let mut counter = 1;
+    map.insert(banks.clone(), counter);
 
     balance_banks(&mut banks);
-    let mut counter = 1;
-    while !set.contains(&banks) {
-        set.insert(banks.clone());
-        balance_banks(&mut banks);
+    while !map.contains_key(&banks) {
         counter += 1;
+        map.insert(banks.clone(), counter);
+        balance_banks(&mut banks);
     }
-    counter
+    let original_index = map[&banks];
+
+    (counter, (counter - original_index) + 1)
 }
 
 pub fn balance_banks(input: &mut [i32]) {
