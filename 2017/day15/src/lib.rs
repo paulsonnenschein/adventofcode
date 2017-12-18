@@ -39,3 +39,29 @@ pub fn process_input(gen_a_start: u64, gen_b_start: u64) -> usize {
         })
         .count()
 }
+
+pub fn process_input_part2(gen_a_start: u64, gen_b_start: u64) -> usize {
+    let gen_a = Generator {
+        last_value: gen_a_start,
+        multiplier: 16_807,
+    };
+    let gen_b = Generator {
+        last_value: gen_b_start,
+        multiplier: 48_271,
+    };
+    let a_iter = gen_a.into_iter().filter(|&value| value % 4 == 0);
+    let b_iter = gen_b.into_iter().filter(|&value| value % 8 == 0);
+
+    let iterator = a_iter.zip(b_iter);
+
+    iterator
+        .take(5_000_000)
+        .filter_map(|(a, b)| {
+            if (a as u16) == (b as u16) {
+                Some(())
+            } else {
+                None
+            }
+        })
+        .count()
+}
