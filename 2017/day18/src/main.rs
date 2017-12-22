@@ -3,9 +3,7 @@ use day18::*;
 
 fn main() {
     let input = include_str!("../input.txt");
-    //let input = include_str!("../test.txt");
-    let result = process_input(input);
 
-    println!("Part1 solution: {}", result);
-    //println!("Part2 solution: {}", garbage_counter);
+    //println!("Part1 solution: {}", process_input(input));
+    println!("Part2 solution: {}", process_input_part2(input));
 }
