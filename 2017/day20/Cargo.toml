@@ -1,0 +1,8 @@
+[package]
+name = "day20"
+version = "0.1.0"
+authors = ["Paul Sonnenschein <paulsonnenschein0@gmail.com>"]
+
+[dependencies]
+regex = "0.2.3"
+lazy_static = "1.0.0"
