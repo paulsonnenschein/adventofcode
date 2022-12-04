@@ -1,5 +1,7 @@
 use std::ops::RangeInclusive;
 
+use itertools::Itertools;
+
 type Range = RangeInclusive<u32>;
 
 pub fn parse(input: &str) -> Vec<(Range, Range)> {
@@ -7,13 +9,11 @@ pub fn parse(input: &str) -> Vec<(Range, Range)> {
         .trim()
         .lines()
         .map(|line| {
-            let mut splitter = line
+            let (l1, l2, r1, r2) = line
                 .split(|c| c == '-' || c == ',')
-                .map(|i| i.parse().unwrap());
-            let l1 = splitter.next().unwrap();
-            let l2 = splitter.next().unwrap();
-            let r1 = splitter.next().unwrap();
-            let r2 = splitter.next().unwrap();
+                .map(|i| i.parse().unwrap())
+                .collect_tuple()
+                .unwrap();
             (l1..=l2, r1..=r2)
         })
         .collect()
