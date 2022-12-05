@@ -13,20 +13,20 @@ pub fn part1(input: &[&str]) -> u32 {
             let right_set = right.chars().collect::<HashSet<char>>();
             let mut intersection = left_set.intersection(&right_set);
             let duplicate = intersection.next().unwrap();
-            priority(duplicate)
+            priority(*duplicate)
         })
         .sum()
 }
 
-fn priority(duplicate: &char) -> u32 {
-    if *duplicate >= 'a' {
-        (*duplicate as u32) - ('a' as u32) + 1
+fn priority(duplicate: char) -> u32 {
+    if duplicate >= 'a' {
+        (duplicate as u32) - ('a' as u32) + 1
     } else {
-        (*duplicate as u32) - ('A' as u32) + 27
+        (duplicate as u32) - ('A' as u32) + 27
     }
 }
 
-pub fn part2(input: Vec<&str>) -> u32 {
+pub fn part2(input: &[&str]) -> u32 {
     input
         .chunks(3)
         .map(|chunk| {
@@ -40,7 +40,7 @@ pub fn part2(input: Vec<&str>) -> u32 {
                 .iter()
                 .find(move |c| sets.iter().all(|s| s.contains(c)))
                 .unwrap();
-            priority(duplicate)
+            priority(*duplicate)
         })
         .sum()
 }
@@ -53,6 +53,6 @@ mod tests {
         let input = include_str!("./input.txt");
         let parsed = parse(input);
         println!("{:?}", part1(&parsed));
-        println!("{:?}", part2(parsed));
+        println!("{:?}", part2(&parsed));
     }
 }

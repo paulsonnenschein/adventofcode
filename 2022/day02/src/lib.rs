@@ -10,7 +10,7 @@ pub enum Outcome {
 }
 
 impl Outcome {
-    fn score(&self) -> u32 {
+    fn score(self) -> u32 {
         match self {
             Win => 6,
             Loss => 0,
@@ -27,7 +27,7 @@ pub enum Play {
 }
 
 impl Play {
-    fn match_outcome(&self, other: Play) -> Outcome {
+    fn match_outcome(self, other: Play) -> Outcome {
         match (self, other) {
             (Rock, Rock) | (Paper, Paper) | (Scissors, Scissors) => Draw,
             (Rock, Paper) | (Paper, Scissors) | (Scissors, Rock) => Loss,
@@ -35,7 +35,7 @@ impl Play {
         }
     }
 
-    fn play_needed_for_outcome(&self, desired_outcome: Outcome) -> Play {
+    fn play_needed_for_outcome(self, desired_outcome: Outcome) -> Play {
         match (self, desired_outcome) {
             (Rock, Draw) | (Paper, Loss) | (Scissors, Win) => Rock,
             (Paper, Draw) | (Scissors, Loss) | (Rock, Win) => Paper,
@@ -43,7 +43,7 @@ impl Play {
         }
     }
 
-    fn score(&self) -> u32 {
+    fn score(self) -> u32 {
         match self {
             Rock => 1,
             Paper => 2,
@@ -57,12 +57,9 @@ impl FromStr for Play {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "A" => Ok(Rock),
-            "X" => Ok(Rock),
-            "B" => Ok(Paper),
-            "Y" => Ok(Paper),
-            "C" => Ok(Scissors),
-            "Z" => Ok(Scissors),
+            "A" | "X" => Ok(Rock),
+            "B" | "Y" => Ok(Paper),
+            "C" | "Z" => Ok(Scissors),
             _ => Err(()),
         }
     }

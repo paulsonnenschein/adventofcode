@@ -14,7 +14,7 @@ pub fn parse(input: &str) -> (Vec<Vec<char>>, Vec<Command>) {
 
     let mut stacks = vec![vec![]; columns];
 
-    while lines.peek().map(|line| line.contains('[')).unwrap_or(false) {
+    while lines.peek().map_or(false, |line| line.contains('[')) {
         let line = lines.next().unwrap();
         let crates = line
             .chars()
@@ -35,7 +35,7 @@ pub fn parse(input: &str) -> (Vec<Vec<char>>, Vec<Command>) {
         .map(|line| {
             let (count, from, to) = line
                 .split_whitespace()
-                .flat_map(|item| item.parse())
+                .flat_map(str::parse)
                 .collect_tuple()
                 .unwrap();
 
