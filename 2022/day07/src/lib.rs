@@ -63,18 +63,34 @@ pub fn parse(input: &str) -> Vec<Command> {
         .1
 }
 
-type FileSystem = HashMap<Vec<String>, Vec<DirectoryListing>>;
 type FolderSizes = HashMap<Vec<String>, u32>;
 
 pub fn part1_and_2(input: &[Command]) -> (u32, u32) {
     let mut current_path = Vec::new();
 
-    let mut file_system: FileSystem = HashMap::new();
+    let mut folder_sizes: FolderSizes = HashMap::new();
 
     for cmd in input {
         match cmd {
             Command::LsCommand(content) => {
-                file_system.insert(current_path.clone(), content.clone());
+                let key = current_path.clone();
+                if let std::collections::hash_map::Entry::Vacant(e) = folder_sizes.entry(key) {
+                    let local_size = content
+                        .iter()
+                        .filter_map(|item| match item {
+                            DirectoryListing::File(size, _) => Some(size),
+                            DirectoryListing::Directory(_) => None,
+                        })
+                        .sum();
+                    e.insert(local_size);
+
+                    // update parent
+                    let mut parent_key = current_path.clone();
+                    while !parent_key.is_empty() {
+                        parent_key.pop();
+                        *folder_sizes.get_mut(&parent_key).unwrap() += local_size;
+                    }
+                }
             }
             Command::CdCommand(destination) => match destination {
                 CdCommandParam::Root => current_path.clear(),
@@ -86,9 +102,7 @@ pub fn part1_and_2(input: &[Command]) -> (u32, u32) {
         }
     }
 
-    let mut folder_sizes: FolderSizes = HashMap::new();
-
-    let total_size = calc_size(&[], &file_system, &mut folder_sizes);
+    let total_size = folder_sizes.get(&vec![]).unwrap();
 
     let part1 = folder_sizes.values().filter(|&&v| v < 100_000).sum();
 
@@ -103,30 +117,6 @@ pub fn part1_and_2(input: &[Command]) -> (u32, u32) {
         .unwrap();
 
     (part1, part2)
-}
-
-fn calc_size(
-    current_path: &[String],
-    file_system: &FileSystem,
-    folder_sizes: &mut FolderSizes,
-) -> u32 {
-    let mut current_path = current_path.to_vec();
-    let mut total_size = 0;
-
-    for listing in file_system.get(&current_path).unwrap_or(&vec![]) {
-        match listing {
-            DirectoryListing::File(size, _) => total_size += size,
-            DirectoryListing::Directory(name) => {
-                current_path.push(name.clone());
-                total_size += calc_size(&current_path, file_system, folder_sizes);
-                current_path.pop();
-            }
-        }
-    }
-
-    folder_sizes.insert(current_path, total_size);
-
-    total_size
 }
 
 #[cfg(test)]
