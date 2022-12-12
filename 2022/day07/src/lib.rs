@@ -2,7 +2,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{alpha1, line_ending, not_line_ending, u32 as parse_u32},
-    combinator::{all_consuming, map},
+    combinator::{all_consuming, map, value},
     multi::separated_list0,
     sequence::tuple,
     IResult,
@@ -30,8 +30,8 @@ pub enum Command {
 fn cd_command(i: &str) -> IResult<&str, Command> {
     let (i, _) = tag("$ cd ")(i)?;
 
-    let parse_root = map(tag("/"), |_| Command::CdCommand(CdCommandParam::Root));
-    let parse_up = map(tag(".."), |_| Command::CdCommand(CdCommandParam::Up));
+    let parse_root = value(Command::CdCommand(CdCommandParam::Root), tag("/"));
+    let parse_up = value(Command::CdCommand(CdCommandParam::Up), tag(".."));
     let parse_down = map(alpha1, |str: &str| {
         Command::CdCommand(CdCommandParam::Down(str.into()))
     });

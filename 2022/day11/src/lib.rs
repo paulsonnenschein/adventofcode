@@ -5,7 +5,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{line_ending, u64 as parse_u64},
-    combinator::{all_consuming, map},
+    combinator::{all_consuming, map, value},
     multi::{separated_list0, separated_list1},
     sequence::{delimited, separated_pair},
     IResult,
@@ -62,14 +62,14 @@ impl MonkeySpec {
 }
 
 fn parse_op(i: &str) -> IResult<&str, Op> {
-    let parse_plus = map(tag("+"), |_| Plus);
-    let parse_times = map(tag("*"), |_| Times);
+    let parse_plus = value(Plus, tag("+"));
+    let parse_times = value(Times, tag("*"));
 
     alt((parse_plus, parse_times))(i)
 }
 
 fn parse_operand(i: &str) -> IResult<&str, Operand> {
-    let parse_old = map(tag("old"), |_| Old);
+    let parse_old = value(Old, tag("old"));
     let parse_const = map(parse_u64, Const);
 
     alt((parse_old, parse_const))(i)
