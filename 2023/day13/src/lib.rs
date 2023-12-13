@@ -13,23 +13,31 @@ pub fn parse(input: &str) -> Vec<Grid<char>> {
 }
 
 pub fn part1(input: &[Grid<char>]) -> usize {
-    input.iter().map(get_mirror_val).sum()
+    input.iter().map(|g| get_mirror_val(g, 0)).sum()
 }
 
-fn get_mirror_val(grid: &Grid<char>) -> usize {
+pub fn part2(input: Vec<Grid<char>>) -> usize {
+    input.into_iter().map(|g| get_mirror_val(&g, 1)).sum()
+}
+
+fn get_mirror_val(grid: &Grid<char>, allowed_differences: usize) -> usize {
     // check rows
     for ((c_idx, current), (n_idx, next)) in grid.iter_rows().enumerate().tuple_windows() {
-        if current.eq(next) {
+        let mut differences = current.zip(next).filter(|(c, n)| c != n).count();
+        if differences <= allowed_differences {
             let back_iter = (0..c_idx).rev();
             let forward_iter = (n_idx + 1)..grid.rows();
-            let all_eq = back_iter.zip(forward_iter).all(|(back_idx, forward_idx)| {
-                grid.iter_rows()
-                    .nth(back_idx)
-                    .unwrap()
-                    .eq(grid.iter_rows().nth(forward_idx).unwrap()) // now this is inefficient
-            });
+            differences += back_iter
+                .zip(forward_iter)
+                .map(|(back_idx, forward_idx)| {
+                    let back = grid.iter_rows().nth(back_idx).unwrap();
+                    let forward = grid.iter_rows().nth(forward_idx).unwrap();
 
-            if all_eq {
+                    back.zip(forward).filter(|(c, n)| c != n).count()
+                })
+                .sum::<usize>();
+
+            if differences == allowed_differences {
                 return (c_idx + 1) * 100;
             }
         }
@@ -37,17 +45,21 @@ fn get_mirror_val(grid: &Grid<char>) -> usize {
 
     // check cols
     for ((c_idx, current), (n_idx, next)) in grid.iter_cols().enumerate().tuple_windows() {
-        if current.eq(next) {
+        let mut differences = current.zip(next).filter(|(c, n)| c != n).count();
+        if differences <= allowed_differences {
             let back_iter = (0..c_idx).rev();
             let forward_iter = (n_idx + 1)..grid.cols();
-            let all_eq = back_iter.zip(forward_iter).all(|(back_idx, forward_idx)| {
-                grid.iter_cols()
-                    .nth(back_idx)
-                    .unwrap()
-                    .eq(grid.iter_cols().nth(forward_idx).unwrap()) // now this is inefficient
-            });
+            differences += back_iter
+                .zip(forward_iter)
+                .map(|(back_idx, forward_idx)| {
+                    let back = grid.iter_cols().nth(back_idx).unwrap();
+                    let forward = grid.iter_cols().nth(forward_idx).unwrap();
 
-            if all_eq {
+                    back.zip(forward).filter(|(c, n)| c != n).count()
+                })
+                .sum::<usize>();
+
+            if differences == allowed_differences {
                 return c_idx + 1;
             }
         }
@@ -64,6 +76,6 @@ mod tests {
         let input = include_str!("./input.txt");
         let parsed = parse(input);
         println!("{:?}", part1(&parsed));
-        //println!("{:?}", part2(parsed));
+        println!("{:?}", part2(parsed));
     }
 }
