@@ -8,7 +8,6 @@ use nom::{
     IResult,
 };
 use std::collections::{HashMap, VecDeque};
-use std::ops::Rem;
 
 #[derive(Debug)]
 pub enum WiringType {
@@ -130,7 +129,6 @@ pub fn part1(input: &[WiringDesc]) -> u32 {
         }
     }
 
-    dbg!(his, los);
     his * los
 }
 
@@ -177,6 +175,58 @@ fn build_map(input: &[WiringDesc]) -> HashMap<&str, Wiring> {
     map
 }
 
+pub fn part2(input: &[WiringDesc]) -> u64 {
+    // build map
+    let mut map = build_map(input);
+
+    // node that leads to rx
+    let target_name = "jm";
+
+    // find which nodes lead to target
+    let mut target_hi_interval = if let Wiring::Conj {
+        source_last_sent_high,
+        ..
+    } = &map[target_name]
+    {
+        source_last_sent_high
+            .keys()
+            .map(|k| (*k, (0u64, 0u64)))
+            .collect::<HashMap<_, _>>()
+    } else {
+        unreachable!()
+    };
+
+    // send pulses
+    'outer: for i in 0.. {
+        let mut pulse_queue = VecDeque::new();
+        pulse_queue.push_front(("button", HiLo::Lo, "broadcaster"));
+
+        while let Some((source, hilo, target)) = pulse_queue.pop_front() {
+            if let Some(w) = map.get_mut(target) {
+                w.receive(hilo, source, &mut pulse_queue);
+            }
+
+            if target == target_name && hilo == HiLo::Hi {
+                if target_hi_interval[source].0 == 0 {
+                    target_hi_interval.get_mut(source).unwrap().0 = i;
+                } else if target_hi_interval[source].1 == 0 {
+                    target_hi_interval.get_mut(source).unwrap().1 =
+                        i - target_hi_interval[source].0;
+                }
+
+                if target_hi_interval.values().all(|v| v.1 > 0) {
+                    break 'outer;
+                }
+            }
+        }
+    }
+
+    target_hi_interval
+        .values()
+        .map(|(_, v)| *v)
+        .fold(1u64, num::integer::lcm)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -186,6 +236,6 @@ mod tests {
         let input = include_str!("./input.txt");
         let parsed = parse(input);
         println!("{:?}", part1(&parsed));
-        //println!("{:?}", part2(&parsed));
+        println!("{:?}", part2(&parsed));
     }
 }
