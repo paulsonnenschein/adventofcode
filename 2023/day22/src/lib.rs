@@ -106,50 +106,46 @@ pub fn part1(input: &[Brick]) -> usize {
     let mut rested_pieces = HashMap::new();
     let mut required_pieces = HashSet::new();
 
+    // sort by lowest z-coordinate
+    moving_pieces.sort_by_key(|brick| brick.start.2.min(brick.end.2));
+
     while !moving_pieces.is_empty() {
         // for each piece: check if moving it down would intersect with any rested piece?
         // if yes -> make it rest (store each coord -> id in rested_pieces)
         //         & if it would intersect with exactly one, remember that id in required_pieces
-
-        // first check ground
         for brick in moving_pieces.drain(..) {
             let brick_down = brick.down();
             if brick_down.inside_ground() {
-                println!("piece {} resting", brick.id);
                 brick.positions().for_each(|pos| {
                     rested_pieces.insert(pos, brick.id);
                 });
             } else {
-                moving_pieces_next.push(brick);
-            }
-        }
-        swap(&mut moving_pieces, &mut moving_pieces_next);
+                let intersecting_brick_ids = brick_down
+                    .positions()
+                    .filter_map(|pos| rested_pieces.get(&pos).copied())
+                    .collect::<HashSet<_>>();
+                if !intersecting_brick_ids.is_empty() {
+                    if intersecting_brick_ids.len() == 1 {
+                        required_pieces.insert(*intersecting_brick_ids.iter().next().unwrap());
+                    }
 
-        moving_pieces.sort_by_key(|brick| brick.start.2.min(brick.end.2));
-
-        // second check other pieces
-        for brick in moving_pieces.drain(..) {
-            let brick_down = brick.down();
-            let intersecting_brick_ids = brick_down
-                .positions()
-                .filter_map(|pos| rested_pieces.get(&pos).copied())
-                .collect::<HashSet<_>>();
-            if !intersecting_brick_ids.is_empty() {
-                if intersecting_brick_ids.len() == 1 {
-                    required_pieces.insert(*intersecting_brick_ids.iter().next().unwrap());
+                    brick.positions().for_each(|pos| {
+                        rested_pieces.insert(pos, brick.id);
+                    });
+                } else {
+                    moving_pieces_next.push(brick_down);
                 }
-
-                println!("piece {} resting", brick.id);
-                brick.positions().for_each(|pos| {
-                    rested_pieces.insert(pos, brick.id);
-                });
-            } else {
-                moving_pieces_next.push(brick_down);
             }
         }
 
         swap(&mut moving_pieces, &mut moving_pieces_next);
     }
+
+    // todo: create graph where each child points to the pieces resting on it, and each piece it is resting on
+    //  - for each piece (or maybe just the required ones?)
+    //  - mark it as destroyed, for each piece above it: if its pieces its resting on are all destroyed -> destroy as well, else: stop and go to next "neighboring" piece
+
+    // todo: this graph could also replace some of the logic from part1?
 
     input.len() - required_pieces.len()
 }
@@ -161,6 +157,20 @@ mod tests {
     #[test]
     fn run22() {
         let input = include_str!("./input.txt");
+        /*let input = "1,0,1~1,2,1
+0,0,2~2,0,2
+0,2,3~2,2,3
+0,0,4~0,2,4
+2,0,5~2,2,5
+0,1,6~2,1,6
+1,1,8~1,1,9";
+        /*let input = &"1,0,1~1,2,1
+0,0,2~2,0,2
+0,2,3~2,2,3
+0,0,4~0,2,4
+2,0,5~2,2,5
+0,1,6~2,1,6
+1,1,8~1,1,9".lines().rev().fold(String::new(), |a, b| a + b + "\n");*/*/
         let parsed = parse(input);
         println!("{:?}", part1(&parsed));
         //println!("{:?}", part2(&parsed));
