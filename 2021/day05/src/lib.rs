@@ -71,7 +71,7 @@ fn get_points(line: &Parsed) -> Vec<(u32, u32)> {
         } else {
             (line.y1..=line.y2).collect()
         };
-        x_iter.into_iter().zip(y_iter.into_iter()).collect()
+        x_iter.into_iter().zip(y_iter).collect()
     }
 }
 
