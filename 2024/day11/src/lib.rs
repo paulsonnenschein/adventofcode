@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 pub fn parse(input: &str) -> Vec<u64> {
     input
@@ -8,7 +8,7 @@ pub fn parse(input: &str) -> Vec<u64> {
 }
 
 pub fn part1(input: &[u64]) -> usize {
-    let mut cache: HashMap<(u64, usize), usize> = HashMap::new();
+    let mut cache: FxHashMap<(u64, usize), usize> = FxHashMap::default();
 
     input
         .iter()
@@ -17,7 +17,7 @@ pub fn part1(input: &[u64]) -> usize {
 }
 
 pub fn part2(input: &[u64]) -> usize {
-    let mut cache: HashMap<(u64, usize), usize> = HashMap::new();
+    let mut cache: FxHashMap<(u64, usize), usize> = FxHashMap::default();
 
     input
         .iter()
@@ -46,7 +46,7 @@ fn step(stone: u64) -> impl Iterator<Item = u64> {
 fn how_many_stones(
     stone: u64,
     steps_left: usize,
-    cache: &mut HashMap<(u64, usize), usize>,
+    cache: &mut FxHashMap<(u64, usize), usize>,
 ) -> usize {
     if let Some(x) = cache.get(&(stone, steps_left)) {
         return *x;
@@ -66,12 +66,18 @@ fn how_many_stones(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::Instant;
 
     #[test]
     fn run11() {
         let input = include_str!("./input.txt");
+        let s = Instant::now();
         let parsed = parse(input);
-        println!("part1: {:?}", part1(&parsed));
-        println!("part2: {:?}", part2(&parsed));
+        let p1 = part1(&parsed);
+        let p2 = part2(&parsed);
+        let duration = s.elapsed();
+        println!("part1: {:?}", p1);
+        println!("part2: {:?}", p2);
+        println!("duration: {:?}", duration);
     }
 }
